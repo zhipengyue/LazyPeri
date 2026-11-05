@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -21,7 +23,9 @@ final class UsbBridge {
     private volatile boolean running = true;
     private volatile Socket client;
     private volatile OutputStream output;
-    private ServerSocket server;
+    private volatile ServerSocket server;
+    private final ExecutorService writer = Executors.newSingleThreadExecutor(
+        task -> new Thread(task, "UsbTrackpadWriter"));
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Map<Integer,Consumer<Boolean>> pending = new HashMap<>();
     private int nextRequestId;
@@ -43,6 +47,10 @@ final class UsbBridge {
                 Socket peer = socket.accept();
                 peer.setTcpNoDelay(true);
                 synchronized (this) {
+                    if (!running) {
+                        peer.close();
+                        return;
+                    }
                     closeClient();
                     client = peer;
                     output = peer.getOutputStream();
@@ -71,14 +79,22 @@ final class UsbBridge {
     }
 
     synchronized boolean send(String event) {
-        if (output == null) return false;
+        OutputStream destination = output;
+        if (!running || destination == null) return false;
+        // Touch handlers run on the UI thread. Send reports in order on a worker.
+        writer.execute(() -> writeEvent(destination, event));
+        return true;
+    }
+
+    private void writeEvent(OutputStream destination, String event) {
+        if (output != destination) return;
         try {
-            output.write((event + "\n").getBytes(StandardCharsets.US_ASCII));
-            output.flush();
-            return true;
+            destination.write((event + "\n").getBytes(StandardCharsets.US_ASCII));
+            destination.flush();
         } catch (IOException error) {
-            closeClient();
-            return false;
+            synchronized (this) {
+                if (output == destination) closeClient();
+            }
         }
     }
 
@@ -97,6 +113,7 @@ final class UsbBridge {
     synchronized void stop() {
         running = false;
         closeClient();
+        writer.shutdownNow();
         try { if (server != null) server.close(); } catch (IOException ignored) { }
     }
 

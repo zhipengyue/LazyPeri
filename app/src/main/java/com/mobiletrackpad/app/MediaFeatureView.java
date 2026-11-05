@@ -90,26 +90,6 @@ final class MediaFeatureView extends FrameLayout implements SurfaceHolder.Callba
             addView(surface, new FrameLayout.LayoutParams(-1, -1));
             cameraFrame = new CameraFrameView(activity);
             addView(cameraFrame, new FrameLayout.LayoutParams(-1, -1));
-            TextView switchButton = new TextView(activity);
-            switchButton.setText("↻  切换镜头");
-            switchButton.setTextColor(Color.WHITE);
-            switchButton.setTextSize(14);
-            switchButton.setGravity(Gravity.CENTER);
-            switchButton.setBackground(UiKit.pill(activity, Color.rgb(33, 45, 67)));
-            FrameLayout.LayoutParams switchParams = new FrameLayout.LayoutParams(dp(116), dp(44), Gravity.TOP | Gravity.RIGHT);
-            switchParams.setMargins(0, dp(12), dp(12), 0);
-            addView(switchButton, switchParams);
-            switchButton.setOnClickListener(v -> switchCamera());
-            TextView rotateButton = new TextView(activity);
-            rotateButton.setText("↻  画面旋转 90°");
-            rotateButton.setTextColor(Color.WHITE);
-            rotateButton.setTextSize(13);
-            rotateButton.setGravity(Gravity.CENTER);
-            rotateButton.setBackground(UiKit.pill(activity, Color.rgb(33, 45, 67)));
-            FrameLayout.LayoutParams rotateParams = new FrameLayout.LayoutParams(dp(176), dp(44), Gravity.TOP | Gravity.RIGHT);
-            rotateParams.setMargins(0, dp(64), dp(12), 0);
-            addView(rotateButton, rotateParams);
-            rotateButton.setOnClickListener(v -> rotateCameraOutput());
             visual = null;
         } else {
             visual = new Visual(activity);
@@ -243,14 +223,14 @@ final class MediaFeatureView extends FrameLayout implements SurfaceHolder.Callba
         }
     }
 
-    private void switchCamera() {
+    void switchCamera() {
         cameraFacing = cameraFacing == Camera.CameraInfo.CAMERA_FACING_FRONT
             ? Camera.CameraInfo.CAMERA_FACING_BACK : Camera.CameraInfo.CAMERA_FACING_FRONT;
         stopCamera();
         startCamera();
     }
 
-    private void rotateCameraOutput() {
+    void rotateCameraOutput() {
         cameraRotationQuarters = (cameraRotationQuarters + 1) & 3;
         activity.getPreferences(Context.MODE_PRIVATE).edit()
             .putInt("camera_rotation_quarters", cameraRotationQuarters).apply();

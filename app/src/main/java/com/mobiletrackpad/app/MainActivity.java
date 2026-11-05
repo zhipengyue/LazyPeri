@@ -71,7 +71,7 @@ public final class MainActivity extends Activity {
     private LinearLayout home, functionPage;
     private FrameLayout rootView, displayPage;
     private LinearLayout headerBar, trackpadContainer, mouseButtons, portraitInputRow;
-    private View orientationButton;
+    private View orientationButton, cameraRotateButton, cameraSwitchButton;
     private TextView settingsButton, textButton, helpButton, portraitKeyboardButton, leftMouseButton, portraitInputStatus;
     private TextView displayAspectButton;
     private boolean windows, portraitTouchpad, textMode, portraitImeVisible, leftButtonHeld, bound;
@@ -201,6 +201,10 @@ public final class MainActivity extends Activity {
         textButton = headerButton("文字", "文字输入", headerBar, dp(56));
         textButton.setTextSize(14);
         textButton.setOnClickListener(v -> setTextMode(true));
+        cameraRotateButton = cameraHeaderButton("ic_camera_rotate", "画面旋转 90°");
+        cameraRotateButton.setOnClickListener(v -> cameraView.rotateCameraOutput());
+        cameraSwitchButton = cameraHeaderButton("ic_camera_switch", "切换前后镜头");
+        cameraSwitchButton.setOnClickListener(v -> cameraView.switchCamera());
         helpButton = headerButton("指南", "打开使用指南", headerBar, dp(48));
         helpButton.setTextSize(13);
         helpButton.setOnClickListener(v -> showGuide());
@@ -443,6 +447,18 @@ public final class MainActivity extends Activity {
             : UiKit.pill(this,Color.rgb(35,47,66));
     }
 
+    private ImageView cameraHeaderButton(String drawable, String description) {
+        ImageView button = new ImageView(this);
+        button.setImageResource(getResources().getIdentifier(drawable, "drawable", getPackageName()));
+        button.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        button.setContentDescription(description);
+        button.setBackground(buttonBackground(false));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dp(44), dp(42));
+        params.leftMargin = dp(4);
+        headerBar.addView(button, params);
+        return button;
+    }
+
     private void addSurface(FrameLayout surface,View view) {
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(-1,-1);
         params.setMargins(dp(8),0,dp(8),dp(8));
@@ -506,6 +522,8 @@ public final class MainActivity extends Activity {
         if (mode == MODE_DISPLAY_GUIDE) displayGuideView.post(() -> displayGuideView.scrollTo(0, 0));
         boolean onPad = mode == MODE_TOUCHPAD;
         orientationButton.setVisibility(onPad ? View.VISIBLE : View.GONE);
+        cameraRotateButton.setVisibility(mode == MODE_CAMERA ? View.VISIBLE : View.GONE);
+        cameraSwitchButton.setVisibility(mode == MODE_CAMERA ? View.VISIBLE : View.GONE);
         settingsButton.setVisibility(onPad ? View.VISIBLE : View.GONE);
         textButton.setVisibility(onPad ? View.VISIBLE : View.GONE);
         helpButton.setVisibility(mode == MODE_TOUCHPAD || mode == MODE_KEYBOARD || mode == MODE_GAMEPAD

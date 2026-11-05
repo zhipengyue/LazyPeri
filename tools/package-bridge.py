@@ -38,6 +38,18 @@ PLATFORMS = {
 }
 
 
+def write_bridge_archive(archive, files):
+    with ZipFile(archive, "w", ZIP_DEFLATED) as output:
+        for source in files:
+            info = ZipInfo(source.name, (1980, 1, 1, 0, 0, 0))
+            info.compress_type = ZIP_DEFLATED
+            info.external_attr = (0o755 if source.suffix in (".command", ".py") else 0o644) << 16
+            data = source.read_bytes()
+            if source.suffix == ".bat":
+                data = data.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+            output.writestr(info, data)
+
+
 def main():
     guide_archive = DOCS / "懒人外设-USB授权指南.zip"
     with ZipFile(guide_archive, "w", ZIP_DEFLATED) as output:
@@ -55,22 +67,12 @@ def main():
     }
     for platform, files in basic_packages.items():
         archive = RELEASES / f"懒人外设-{platform}-USB-Bridge.zip"
-        with ZipFile(archive, "w", ZIP_DEFLATED) as output:
-            for source in files:
-                info = ZipInfo(source.name, (1980, 1, 1, 0, 0, 0))
-                info.compress_type = ZIP_DEFLATED
-                info.external_attr = (0o755 if source.suffix in (".command", ".py") else 0o644) << 16
-                output.writestr(info, source.read_bytes())
+        write_bridge_archive(archive, files)
 
     for platform, unique in PLATFORMS.items():
         files = COMMON + unique
         archive = RELEASES / f"懒人外设-{platform}-全功能-USB-Bridge.zip"
-        with ZipFile(archive, "w", ZIP_DEFLATED) as output:
-            for source in files:
-                info = ZipInfo(source.name, (1980, 1, 1, 0, 0, 0))
-                info.compress_type = ZIP_DEFLATED
-                info.external_attr = (0o755 if source.suffix in (".command", ".py") else 0o644) << 16
-                output.writestr(info, source.read_bytes())
+        write_bridge_archive(archive, files)
         shutil.copy2(archive, ASSETS / ("bridge-macos.zip" if platform == "macOS" else "bridge-windows.zip"))
         if platform == "macOS":
             expanded = RELEASES / "懒人外设-macOS-全功能-USB-Bridge"

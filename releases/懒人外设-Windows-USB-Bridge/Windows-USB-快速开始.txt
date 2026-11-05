@@ -1,0 +1,11 @@
+懒人外设 · Windows USB 工具包
+
+1. 把这个 ZIP 解压到 Windows 电脑的本地文件夹。不要在 ZIP 预览窗口里运行批处理文件。
+2. 电脑安装 Python 3 和 Android Platform Tools（adb）。详细说明见同包的 Windows-USB-授权指南.md。
+3. 手机上的“开发者选项”开启 USB 调试，用可传数据的线连接电脑并解锁；下拉通知栏，点“正在通过 USB 充电”或“USB 用途”，选择“文件传输／传输数据（MTP）”，再允许“此电脑进行 USB 调试”。
+4. 在手机上打开新版“懒人外设”。
+5. 在电脑上双击 start-usb-windows.bat。保持命令窗口打开。
+6. 窗口出现“USB Bridge 已就绪”和“触摸板已连接”后，先在 Windows 桌面测试指针，再在记事本测试键盘。
+
+只插入数据线不会生效，必须运行这个电脑端 Bridge。
+如果失败，请把命令窗口中的文字或截图发给开发者；反馈邮箱 eleven.zhi@outlook.com，微信 kaka20491010。
