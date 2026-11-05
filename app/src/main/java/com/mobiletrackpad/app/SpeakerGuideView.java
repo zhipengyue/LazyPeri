@@ -34,7 +34,7 @@ final class SpeakerGuideView extends ScrollView {
         text(content, "电脑声音 → 虚拟音频线 → USB Bridge → 手机扬声器", 14, MUTED, false, 8);
         text(content, "虚拟音频线负责让桥接程序读到电脑声音；蓝牙 HID 连接不传声音。", 14, MUTED, false, 10);
         text(content, "已用过本项目的摄像头？电脑上的 start-media 脚本可以直接复用；音箱模式选择 2，不用重新下载桥接文件。", 14, BLUE, false, 10);
-        text(content, "首次使用时，可点击下方按钮把 APK 内的电脑端桥接文件保存到手机，再传到电脑解压；保存过程无需联网。项目源码中也可在 releases/懒人外设-macOS-全功能-USB-Bridge.zip 或 releases/懒人外设-Windows-全功能-USB-Bridge.zip 找到对应文件。", 14, MUTED, false, 10);
+        text(content, "首次使用时，可把 APK 内的桥接文件保存到手机再传给电脑；电脑也可访问 github.com/zhipengyue/LazyPeri，从 releases 目录直接下载对应 ZIP。", 14, MUTED, false, 10);
 
         platform("macOS", "BlackHole 2ch", "https://existential.audio/blackhole/",
             "在“系统设置 → 声音 → 输出”中选择 BlackHole 2ch。电脑原扬声器暂时不会播放这一路声音。",
@@ -76,6 +76,8 @@ final class SpeakerGuideView extends ScrollView {
         save.setPadding(dp(10), dp(12), dp(10), dp(12));
         save.setBackground(UiKit.pill(getContext(), Color.rgb(36, 87, 151)));
         save.setOnClickListener(v -> savePackage.run());
+        link(card, "电脑从 GitHub 下载 " + name + " 桥接包", name.equals("macOS")
+            ? BridgeDownloads.MAC_ZIP : BridgeDownloads.WINDOWS_ZIP);
         link(card, "Python 3：https://www.python.org/downloads/", "https://www.python.org/downloads/");
         link(card, "adb：https://developer.android.com/tools/releases/platform-tools",
             "https://developer.android.com/tools/releases/platform-tools");

@@ -39,6 +39,14 @@ PLATFORMS = {
 
 
 def main():
+    guide_archive = DOCS / "懒人外设-USB授权指南.zip"
+    with ZipFile(guide_archive, "w", ZIP_DEFLATED) as output:
+        for source in (DOCS / "macOS-USB-授权指南.md", DOCS / "Windows-USB-授权指南.md"):
+            info = ZipInfo(source.name, (1980, 1, 1, 0, 0, 0))
+            info.compress_type = ZIP_DEFLATED
+            info.external_attr = 0o644 << 16
+            output.writestr(info, source.read_bytes())
+
     for platform, unique in PLATFORMS.items():
         files = COMMON + unique
         archive = RELEASES / f"懒人外设-{platform}-全功能-USB-Bridge.zip"

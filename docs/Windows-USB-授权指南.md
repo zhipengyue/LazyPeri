@@ -10,7 +10,7 @@
 
 ## 2. 准备 Windows 电脑
 
-1. 安装 **Python 3** 与 **Android Platform Tools**，使 `py -3`（或 `python`）和 `adb` 可在命令提示符中运行。可下载项目提供的 `懒人外设-Windows-USB-Bridge.zip`，解压到电脑本地文件夹；不要直接在 ZIP 压缩包内双击启动文件。
+1. 安装 **Python 3** 与 **Android Platform Tools**，使 `py -3`（或 `python`）和 `adb` 可在命令提示符中运行。可从 [GitHub 下载 Windows 全功能桥接 ZIP](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-Windows-全功能-USB-Bridge.zip)，解压到电脑本地文件夹；不要直接在 ZIP 压缩包内双击启动文件。
 2. 若 `adb devices` 看不到手机，可能需要安装该手机厂商的 **ADB USB 驱动**；Google 设备使用 Google USB Driver。驱动来源请以手机厂商或 Android 开发者文档为准。
 3. **Windows 没有与 macOS“无障碍”相同的全局授权开关。**正常情况下，Bridge 无需“以管理员身份运行”。如果目标程序自身以管理员身份运行，普通权限的 Bridge 可能无法向它输入；可先在未提升权限的“记事本”中测试，必要时再让 Bridge 与目标程序使用相同权限级别。不要把管理员权限作为常规设置。
 

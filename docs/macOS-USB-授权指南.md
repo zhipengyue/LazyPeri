@@ -19,7 +19,7 @@
 ## 3. 启动并测试
 
 1. 在手机上打开“懒人外设”。Mac 需已安装 Python 3 和 Android Platform Tools（`adb`）。
-2. 双击项目中的 `tools/start-usb-mac.command`。保持终端窗口开启。
+2. 在 Mac 上从 [GitHub 下载 macOS 全功能桥接 ZIP](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-macOS-全功能-USB-Bridge.zip)，解压后双击其中的 `start-usb-mac.command`。保持终端窗口开启。
 3. 正常时依次看到 **“macOS 辅助功能权限已确认。”**、**“USB Bridge 已就绪。”**、**“触摸板已连接。”**
 4. 在 Mac 上打开“文本编辑”等普通应用，先点入文本框，再在手机上移动指针或发送文字。文字发往电脑当前获得输入焦点的位置。
 

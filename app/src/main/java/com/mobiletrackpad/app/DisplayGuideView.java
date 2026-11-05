@@ -88,8 +88,9 @@ final class DisplayGuideView extends ScrollView {
         text("然后到 Mac“系统设置 → 显示器”确认已有两块屏幕，并把虚拟屏幕“用作”设为扩展显示器，不要选镜像。建议分辨率约 1280×720。", 14, MUTED, false, 10);
 
         heading("2 · 准备 macOS 桥接包");
-        text("点击下方按钮，把 APK 内的 macOS 桥接 ZIP 保存到手机，再传到 Mac 解压。项目源码路径：releases/懒人外设-macOS-全功能-USB-Bridge.zip。", 14, MUTED, false, 8);
+        text("把 APK 内的 ZIP 保存到手机再传到 Mac，或在电脑访问 github.com/zhipengyue/LazyPeri 下载 releases/懒人外设-macOS-全功能-USB-Bridge.zip。下载后先解压。", 14, MUTED, false, 8);
         action("↓  保存 macOS 桥接包到手机", saveMac, 12);
+        link("电脑从 GitHub 下载 macOS 桥接包", BridgeDownloads.MAC_ZIP);
         text("Mac 还需安装 Python 3 与 Android Platform Tools（adb）；首次运行脚本会联网安装截图依赖。", 14, MUTED, false, 12);
         link("Python 3 官方下载", "https://www.python.org/downloads/");
         link("Android Platform Tools 官方下载", "https://developer.android.com/tools/releases/platform-tools");
@@ -107,8 +108,9 @@ final class DisplayGuideView extends ScrollView {
         text("先连接第二显示器，或安装你信任的虚拟显示器驱动。打开“设置 → 系统 → 屏幕”，选择“扩展这些显示器”。如果电脑只识别到一块屏幕，先完成这一步。", 14, MUTED, false, 8);
 
         heading("2 · 准备 Windows 桥接包");
-        text("点击下方按钮，把 APK 内的 Windows 桥接 ZIP 保存到手机，再传到电脑解压。项目源码路径：releases/懒人外设-Windows-全功能-USB-Bridge.zip。", 14, MUTED, false, 8);
+        text("把 APK 内的 ZIP 保存到手机再传到电脑，或在电脑访问 github.com/zhipengyue/LazyPeri 下载 releases/懒人外设-Windows-全功能-USB-Bridge.zip。下载后先解压。", 14, MUTED, false, 8);
         action("↓  保存 Windows 桥接包到手机", saveWindows, 12);
+        link("电脑从 GitHub 下载 Windows 桥接包", BridgeDownloads.WINDOWS_ZIP);
         text("电脑还需安装 Python 3 与 Android Platform Tools（adb）；首次运行脚本会联网安装截图依赖。", 14, MUTED, false, 12);
         link("Python 3 官方下载", "https://www.python.org/downloads/");
         link("Android Platform Tools 官方下载", "https://developer.android.com/tools/releases/platform-tools");
@@ -143,7 +145,7 @@ final class DisplayGuideView extends ScrollView {
     }
 
     private void link(String label, String url) {
-        TextView view = text(label + "：" + url, 13, BLUE, false, 8);
+        TextView view = text(label, 13, BLUE, false, 8);
         view.setOnClickListener(v -> {
             try { getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url))); }
             catch (RuntimeException error) { copy(url); }

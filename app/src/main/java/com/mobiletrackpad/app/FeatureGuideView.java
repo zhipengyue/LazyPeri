@@ -100,6 +100,9 @@ final class FeatureGuideView extends ScrollView {
             : "macOS：start-usb-mac.command\nWindows：start-usb-windows.bat", 14, WHITE, true, 10);
         action(content, "↓  保存 macOS 桥接包到手机", saveMac, true, 12);
         action(content, "↓  保存 Windows 桥接包到手机", saveWindows, true, 10);
+        text(content, "电脑也可访问 github.com/zhipengyue/LazyPeri，进入 releases 目录下载对应 ZIP；下方链接可点按打开、长按复制。", 14, MUTED, false, 12);
+        link(content, "GitHub 下载 macOS 桥接包", BridgeDownloads.MAC_ZIP);
+        link(content, "GitHub 下载 Windows 桥接包", BridgeDownloads.WINDOWS_ZIP);
         text(content, "电脑首次使用还需安装 Python 3 和 Android Platform Tools（adb）。脚本和 Python 文件在 ZIP 解压目录的根目录；打开该目录运行脚本并保持窗口开启。", 14, MUTED, false, 12);
         link(content, "Python 3 官方下载", "https://www.python.org/downloads/");
         link(content, "Android Platform Tools 官方下载", "https://developer.android.com/tools/releases/platform-tools");
@@ -129,7 +132,7 @@ final class FeatureGuideView extends ScrollView {
     }
 
     private void link(LinearLayout parent, String label, String url) {
-        TextView view = text(parent, label + "：" + url, 13, BLUE, false, 8);
+        TextView view = text(parent, label, 13, BLUE, false, 8);
         view.setOnClickListener(v -> {
             try { getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url))); }
             catch (RuntimeException error) { copy(url); }

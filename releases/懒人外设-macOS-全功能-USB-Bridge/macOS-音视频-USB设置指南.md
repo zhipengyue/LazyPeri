@@ -1,6 +1,6 @@
 # 懒人外设：macOS 音视频 USB 设置
 
-首次使用时，在手机应用的“摄像头”或“音箱”指南页点“保存 macOS 桥接包到手机”，选择保存位置，再把 ZIP 传到 Mac 解压。该 ZIP 已内置于 APK，保存时无需联网；它只是脚本的打包方式，不是需要安装的软件。若已通过 `start-media-mac.command` 调试过摄像头，音箱可直接复用同一个脚本，选择模式 `2`，无需再次保存。手机安装新版 APK，开启 USB 调试、允许此 Mac 调试，并打开“懒人外设”。Mac 需安装 Python 3 和 Android Platform Tools (`adb`)。摄像头 USB 链路已完成一次真机试用；音频链路仍需验证。
+首次使用时，可在 Mac 上从 [GitHub 下载 macOS 全功能桥接 ZIP](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-macOS-全功能-USB-Bridge.zip)（`releases/懒人外设-macOS-全功能-USB-Bridge.zip`），或在手机应用的“摄像头”“音箱”指南页保存同一 ZIP，再传到 Mac。下载后先解压；ZIP 只是脚本的打包方式，不是需要安装的软件。若已通过 `start-media-mac.command` 调试过摄像头，音箱可直接复用同一个脚本，选择模式 `2`，无需再次保存。手机安装新版 APK，开启 USB 调试、允许此 Mac 调试，并打开“懒人外设”。Mac 需安装 Python 3 和 Android Platform Tools (`adb`)。摄像头 USB 链路已完成一次真机试用；音频链路仍需验证。
 
 ## 麦克风
 

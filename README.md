@@ -11,13 +11,13 @@ Android 手机通过蓝牙 HID 或 USB 数据线配合电脑端 Bridge 模拟触
 ### macOS
 
 1. 打开 [BetterDisplay](https://betterdisplay.pro/)，依次进入 **Settings → Displays → Overview → Create New Virtual Screen**，选 16:9 预设并创建；再在新屏幕设置中打开 **Connect this virtual screen**。只有连接后，Mac 才会识别到第二块屏幕。在 Mac 显示器设置中确认它“用作”扩展显示器。
-2. 在手机指南的 **macOS** 页保存 Mac 桥接包，或使用 `releases/懒人外设-macOS-全功能-USB-Bridge.zip`。安装 Python 3 与 adb，手机开启 USB 调试并允许这台 Mac。
+2. 在手机指南的 **macOS** 页保存 Mac 桥接包，或在电脑上从 [GitHub 直接下载 macOS 全功能桥接包](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-macOS-全功能-USB-Bridge.zip)。安装 Python 3 与 adb，手机开启 USB 调试并允许这台 Mac。
 3. 打开手机“显示器”页面，在解压目录运行 `start-display-mac.command`，输入扩展屏幕编号。首次使用需给终端屏幕录制权限。完整步骤见 [macOS 显示器指南](docs/macOS-显示器-USB设置指南.md)。
 
 ### Windows
 
 1. 连接第二块显示器，或安装你信任的虚拟显示器驱动；在 Windows 显示设置中选择“扩展这些显示器”。
-2. 在手机指南的 **Windows** 页保存 Windows 桥接包，或使用 `releases/懒人外设-Windows-全功能-USB-Bridge.zip`。安装 Python 3 与 adb，手机开启 USB 调试并允许这台电脑。
+2. 在手机指南的 **Windows** 页保存 Windows 桥接包，或在电脑上从 [GitHub 直接下载 Windows 全功能桥接包](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-Windows-全功能-USB-Bridge.zip)。安装 Python 3 与 adb，手机开启 USB 调试并允许这台电脑。
 3. 打开手机“显示器”页面，在解压目录运行 `start-display-windows.bat`，输入扩展屏幕编号。完整步骤见 [Windows 显示器指南](docs/Windows-显示器-USB设置指南.md)。
 
 ## 音视频功能（USB 试用版）
@@ -28,7 +28,7 @@ Android 手机通过蓝牙 HID 或 USB 数据线配合电脑端 Bridge 模拟触
 
 电脑端依赖：Python 3、Android Platform Tools (`adb`)；音频需 Windows 的 VB-CABLE 或 Mac 的 BlackHole；摄像头桥接需 Windows/Mac 的 OBS 虚拟摄像头。Mac 和 Windows 桥接 ZIP 已作为离线资产内置 APK；用户可在各功能指南页点击“保存桥接包到手机”，通过系统文件选择器保存后再传到电脑解压。首次运行启动脚本会创建 Python 虚拟环境并从网络安装 `sounddevice`、`numpy`、`Pillow`、`pyvirtualcam`。这些驱动由原作者提供，项目工具包不重新分发。**蓝牙 HID 仍只支持触摸板、键盘和手柄，不传输音视频。** Mac 摄像头 USB 链路已完成一次真机试用；Windows 摄像头与音频链路仍需真机验证。详细步骤与故障提示见 [音视频兼容性与下载说明](docs/音视频兼容性与下载说明.md)。
 
-触摸板、键盘、游戏手柄和麦克风的右上角也提供整页“指南”；麦克风首次进入时直接展示指南。七个功能的指南均可保存 APK 内置的 Mac 或 Windows 桥接包。源码中的原始 ZIP 位于 `releases/懒人外设-macOS-全功能-USB-Bridge.zip` 和 `releases/懒人外设-Windows-全功能-USB-Bridge.zip`。
+触摸板、键盘、游戏手柄和麦克风的右上角也提供整页“指南”；麦克风首次进入时直接展示指南。七个功能的指南均可保存 APK 内置的 Mac 或 Windows 桥接包。电脑也可访问 [GitHub 仓库的 releases 目录](https://github.com/zhipengyue/LazyPeri/tree/main/releases)下载对应 ZIP，解压后运行本系统的启动脚本。
 
 ## 意见反馈
 
@@ -36,7 +36,7 @@ Android 手机通过蓝牙 HID 或 USB 数据线配合电脑端 Bridge 模拟触
 
 ## 使用
 
-1. 安装 `releases/懒人外设-Android-v0.9.8.apk`（与 `app/build/outputs/apk/debug/app-debug.apk` 内容相同），打开应用。蓝牙模式需允许“附近设备”权限。
+1. 安装 [GitHub 上的 Android APK](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-Android-v0.9.9.apk)（仓库路径：`releases/懒人外设-Android-v0.9.9.apk`），打开应用。蓝牙模式需允许“附近设备”权限。
 2. 蓝牙模式：在电脑与手机的系统蓝牙设置中配对；应用打开时会自动尝试连接已配对的电脑。如需手动选择，打开相应功能的“指南”→“连接设置”。手机必须支持 Bluetooth HID Device。
 3. USB 模式：在手机的开发者选项中开启 **USB 调试**，用数据线连接电脑并接受手机上的调试授权。电脑需安装 Python 3 和 Android Platform Tools（`adb`）。打开手机应用，再运行 `tools/start-usb-mac.command` 或 `tools/start-usb-windows.bat`。Windows 可下载下方的“Windows USB 工具包”，解压后运行其中的批处理文件。也可运行 `python3 tools/usb-bridge.py`（Windows 可用 `py -3`）。
 4. macOS 首次使用 USB Bridge 时，在“系统设置 → 隐私与安全性 → 无障碍（部分版本称辅助功能）”中允许实际运行 Bridge 的程序控制电脑；Windows 无需开启同名系统权限。详细步骤和故障排查见下方的 USB 授权指南。点击应用右上角“指南”可查看手势与连接状态；“⚙”可选择 Mac 或 Windows 的桌面切换快捷键。
@@ -45,11 +45,13 @@ Android 手机通过蓝牙 HID 或 USB 数据线配合电脑端 Bridge 模拟触
 
 - [macOS USB 授权指南](docs/macOS-USB-授权指南.md)
 - [Windows USB 授权指南](docs/Windows-USB-授权指南.md)
-- [两份指南打包下载](docs/懒人外设-USB授权指南.zip)
-- [Windows USB 工具包下载](releases/懒人外设-Windows-USB-Bridge.zip)
-- [macOS USB 工具包下载](releases/懒人外设-macOS-USB-Bridge.zip)
-- [Windows 全功能 USB 工具包（含音视频与显示器试用版）](releases/懒人外设-Windows-全功能-USB-Bridge.zip)
-- [macOS 全功能 USB 工具包（含音视频与显示器试用版）](releases/懒人外设-macOS-全功能-USB-Bridge.zip)
+电脑打开 [GitHub 仓库](https://github.com/zhipengyue/LazyPeri)，进入 `releases` 目录即可找到以下文件；推荐下载含所有桥接脚本的全功能包：
+
+- [两份指南打包下载](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/docs/懒人外设-USB授权指南.zip)
+- [Windows USB 工具包下载](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-Windows-USB-Bridge.zip)
+- [macOS USB 工具包下载](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-macOS-USB-Bridge.zip)
+- [Windows 全功能 USB 工具包（含音视频与显示器试用版）](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-Windows-全功能-USB-Bridge.zip)
+- [macOS 全功能 USB 工具包（含音视频与显示器试用版）](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-macOS-全功能-USB-Bridge.zip)
 
 USB 数据线连接本身不会让普通 Android 手机变成 USB HID 鼠标。使用 USB 功能时，电脑端必须运行本项目的 `tools/usb-bridge.py`，并保持窗口打开。macOS 若显示“未授予辅助功能权限”，请在系统设置中允许**实际启动脚本的程序**（从 `.command` 启动通常是“终端”，从 Codex 启动则是 Codex），完全退出并重新打开该程序后再启动 Bridge。Windows 无需 macOS 式的无障碍授权，但手机必须确认 USB 调试弹窗。文字发送还要先在电脑的目标文本框放置光标。
 

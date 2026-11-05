@@ -34,7 +34,7 @@ final class CameraGuideView extends ScrollView {
         text(content, "手机摄像头 · USB 使用指南", 23, WHITE, true, 0);
         text(content, "手机采集画面 → USB Bridge 传输 → OBS Virtual Camera → 电脑应用选择摄像头", 14, MUTED, false, 8);
         text(content, "OBS 提供电脑可识别的虚拟摄像头；桥接程序把手机画面送进去。蓝牙连接不传视频。", 14, MUTED, false, 10);
-        text(content, "电脑端桥接文件已包含在本 APK 中。点击下方按钮保存到手机，再传到电脑解压；保存过程无需联网。项目源码中也可在 releases/懒人外设-macOS-全功能-USB-Bridge.zip 或 releases/懒人外设-Windows-全功能-USB-Bridge.zip 找到对应文件。", 14, BLUE, false, 10);
+        text(content, "电脑端桥接文件已包含在本 APK 中。可保存到手机再传给电脑，也可在电脑访问 github.com/zhipengyue/LazyPeri，从 releases 目录下载对应 ZIP。", 14, BLUE, false, 10);
 
         platform("macOS",
             "打开 OBS，点一次“启动虚拟摄像头”再点“停止虚拟摄像头”，然后退出 OBS。"
@@ -77,6 +77,8 @@ final class CameraGuideView extends ScrollView {
         save.setPadding(dp(10), dp(12), dp(10), dp(12));
         save.setBackground(UiKit.pill(getContext(), Color.rgb(36, 87, 151)));
         save.setOnClickListener(v -> savePackage.run());
+        link(card, "电脑从 GitHub 下载 " + name + " 桥接包", mac
+            ? BridgeDownloads.MAC_ZIP : BridgeDownloads.WINDOWS_ZIP);
         link(card, "Python 3：https://www.python.org/downloads/", "https://www.python.org/downloads/");
         link(card, "adb：https://developer.android.com/tools/releases/platform-tools",
             "https://developer.android.com/tools/releases/platform-tools");
