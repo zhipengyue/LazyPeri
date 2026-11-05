@@ -84,7 +84,7 @@ final class CameraGuideView extends ScrollView {
             "https://developer.android.com/tools/releases/platform-tools");
 
         step(card, "2 · " + (mac ? "允许虚拟摄像头扩展" : "确认虚拟摄像头可用"), permission, 16);
-        step(card, "3 · 运行 USB 桥接命令", "手机开启 USB 调试，允许这台电脑调试，并打开本应用的摄像头页面。" + commandHelp, 16);
+        step(card, "3 · 运行 USB 桥接命令", "手机开启 USB 调试，用可传数据的线连接电脑并解锁手机。下拉通知栏，点“正在通过 USB 充电”或“USB 用途”，选择“文件传输／传输数据（MTP）”；再允许这台电脑进行 USB 调试，打开本应用的摄像头页面。" + commandHelp, 16);
         TextView commandView = text(card, command, 15, WHITE, true, 10);
         commandView.setTypeface(Typeface.MONOSPACE, Typeface.BOLD);
         commandView.setTextIsSelectable(true);

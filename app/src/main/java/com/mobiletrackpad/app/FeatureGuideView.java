@@ -54,6 +54,7 @@ final class FeatureGuideView extends ScrollView {
             ? "麦克风声音仅通过 USB 音视频 Bridge 传输，蓝牙 HID 不传输音频。"
             : "蓝牙模式先在手机和电脑的系统蓝牙设置中配对。USB 模式需开启手机 USB 调试，并在手机上允许这台电脑调试。",
             14, MUTED, false, 8);
+        text(content, "USB 连接步骤：用可传数据的线连接电脑并解锁手机 → 从屏幕顶部下拉通知栏 → 点“正在通过 USB 充电”或“USB 用途” → 选择“文件传输／传输数据（MTP）” → 出现“允许 USB 调试”时点“允许”。选项名称因手机而异。", 14, BLUE, false, 10);
         action(content, "开始使用" + title + "  →", openFeature, true, 20);
     }
 

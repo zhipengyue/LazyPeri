@@ -96,7 +96,7 @@ final class DisplayGuideView extends ScrollView {
         link("Android Platform Tools 官方下载", "https://developer.android.com/tools/releases/platform-tools");
 
         heading("3 · 连接手机并运行脚本");
-        text("手机开启 USB 调试，连接 Mac 并允许调试，打开本应用“显示器”页面。在 Mac 解压目录运行 start-display-mac.command。", 14, MUTED, false, 8);
+        text("手机开启 USB 调试，用可传数据的线连接 Mac 并解锁手机。下拉通知栏，点“正在通过 USB 充电”或“USB 用途”，选择“文件传输／传输数据（MTP）”；再允许这台 Mac 进行 USB 调试。打开本应用“显示器”页面，在 Mac 解压目录运行 start-display-mac.command。", 14, MUTED, false, 8);
         text("首次使用需在“系统设置 → 隐私与安全性 → 屏幕与系统音频录制”中允许终端录制屏幕，然后完全退出终端并重新运行脚本。", 14, MUTED, false, 10);
 
         heading("4 · 选择扩展屏幕");
@@ -116,7 +116,7 @@ final class DisplayGuideView extends ScrollView {
         link("Android Platform Tools 官方下载", "https://developer.android.com/tools/releases/platform-tools");
 
         heading("3 · 连接手机并运行脚本");
-        text("手机开启 USB 调试，连接 Windows 电脑并允许调试，打开本应用“显示器”页面。在电脑解压目录双击 start-display-windows.bat。", 14, MUTED, false, 8);
+        text("手机开启 USB 调试，用可传数据的线连接 Windows 电脑并解锁手机。下拉通知栏，点“正在通过 USB 充电”或“USB 用途”，选择“文件传输／传输数据（MTP）”；再允许这台电脑进行 USB 调试。打开本应用“显示器”页面，在电脑解压目录双击 start-display-windows.bat。", 14, MUTED, false, 8);
 
         heading("4 · 选择扩展屏幕");
         text("命令窗口列出屏幕编号后，输入扩展屏幕的编号，保持命令窗口打开。", 14, MUTED, false, 8);

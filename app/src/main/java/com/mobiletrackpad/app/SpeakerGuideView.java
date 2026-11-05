@@ -83,7 +83,7 @@ final class SpeakerGuideView extends ScrollView {
             "https://developer.android.com/tools/releases/platform-tools");
 
         step(card, "2 · 将电脑声音输出到虚拟音频线", output, 16);
-        step(card, "3 · 运行 USB 桥接命令", "手机开启 USB 调试、允许这台电脑调试，然后打开应用的“音箱”页面。" + bridgeHelp, 16);
+        step(card, "3 · 运行 USB 桥接命令", "手机开启 USB 调试，用可传数据的线连接电脑并解锁手机。下拉通知栏，点“正在通过 USB 充电”或“USB 用途”，选择“文件传输／传输数据（MTP）”；再允许这台电脑进行 USB 调试，然后打开应用的“音箱”页面。" + bridgeHelp, 16);
         TextView commandView = text(card, command, 15, WHITE, true, 10);
         commandView.setTypeface(Typeface.MONOSPACE, Typeface.BOLD);
         commandView.setTextIsSelectable(true);

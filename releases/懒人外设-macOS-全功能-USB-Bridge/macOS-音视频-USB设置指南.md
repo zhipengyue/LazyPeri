@@ -2,6 +2,8 @@
 
 首次使用时，可在 Mac 上从 [GitHub 下载 macOS 全功能桥接 ZIP](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-macOS-全功能-USB-Bridge.zip)（`releases/懒人外设-macOS-全功能-USB-Bridge.zip`），或在手机应用的“摄像头”“音箱”指南页保存同一 ZIP，再传到 Mac。下载后先解压；ZIP 只是脚本的打包方式，不是需要安装的软件。若已通过 `start-media-mac.command` 调试过摄像头，音箱可直接复用同一个脚本，选择模式 `2`，无需再次保存。手机安装新版 APK，开启 USB 调试、允许此 Mac 调试，并打开“懒人外设”。Mac 需安装 Python 3 和 Android Platform Tools (`adb`)。摄像头 USB 链路已完成一次真机试用；音频链路仍需验证。
 
+**手机 USB 连接：**用可传数据的线连接 Mac 并解锁手机 → 下拉通知栏，点“正在通过 USB 充电”或“USB 用途” → 选“文件传输／传输数据（MTP）” → 弹出“允许 USB 调试”时点“允许”。Mac 终端运行 `adb devices`，看到序列号后为 `device` 再启动桥接脚本。
+
 ## 麦克风
 
 1. 从 [BlackHole 官网](https://existential.audio/blackhole/) 安装 **BlackHole 2ch**。

@@ -47,6 +47,21 @@ def main():
             info.external_attr = 0o644 << 16
             output.writestr(info, source.read_bytes())
 
+    basic_packages = {
+        "macOS": [TOOLS / "start-usb-mac.command", TOOLS / "usb-bridge.py",
+                  DOCS / "macOS-USB-授权指南.md", DOCS / "macOS-USB-快速开始.txt"],
+        "Windows": [TOOLS / "start-usb-windows.bat", TOOLS / "usb-bridge.py",
+                    DOCS / "Windows-USB-授权指南.md", DOCS / "Windows-USB-快速开始.txt"],
+    }
+    for platform, files in basic_packages.items():
+        archive = RELEASES / f"懒人外设-{platform}-USB-Bridge.zip"
+        with ZipFile(archive, "w", ZIP_DEFLATED) as output:
+            for source in files:
+                info = ZipInfo(source.name, (1980, 1, 1, 0, 0, 0))
+                info.compress_type = ZIP_DEFLATED
+                info.external_attr = (0o755 if source.suffix in (".command", ".py") else 0o644) << 16
+                output.writestr(info, source.read_bytes())
+
     for platform, unique in PLATFORMS.items():
         files = COMMON + unique
         archive = RELEASES / f"懒人外设-{platform}-全功能-USB-Bridge.zip"
