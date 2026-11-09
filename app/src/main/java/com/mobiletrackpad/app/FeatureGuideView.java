@@ -46,9 +46,9 @@ final class FeatureGuideView extends ScrollView {
         if (feature == TOUCHPAD) touchpad();
         else if (feature == KEYBOARD) keyboard();
         else if (feature == GAMEPAD) gamepad();
-        else microphone();
+        else microphone(saveMac, saveWindows);
 
-        usbPackages(saveMac, saveWindows, feature == MICROPHONE);
+        if (feature != MICROPHONE) usbPackages(saveMac, saveWindows, false);
         text(content, "连接方式", 17, WHITE, true, 24);
         text(content, feature == MICROPHONE
             ? "麦克风声音仅通过 USB 音视频 Bridge 传输，蓝牙 HID 不传输音频。"
@@ -82,13 +82,54 @@ final class FeatureGuideView extends ScrollView {
         text(content, "USB Bridge 发送键盘映射：左摇杆/方向键 → WASD；右摇杆 → 方向键；A/B/X/Y → J/K/U/I；L1/R1 → Q/E；开始/选择 → Enter/Tab。", 14, MUTED, false, 10);
     }
 
-    private void microphone() {
+    private void microphone(Runnable saveMac, Runnable saveWindows) {
         section("让手机充当电脑麦克风");
-        text(content, "手机打开“麦克风”页面并允许录音权限。电脑运行下方桥接包里的 start-media 脚本，选择模式 1，再选择虚拟音频设备编号。保持电脑端窗口打开。", 14, MUTED, false, 8);
-        text(content, "Mac 安装 BlackHole 2ch，在会议软件中选择 BlackHole 2ch 作为麦克风；脚本里选择它的双声道输出设备编号。", 14, MUTED, false, 10);
-        link(content, "BlackHole 2ch 官方下载", "https://existential.audio/blackhole/");
-        text(content, "Windows 安装 VB-CABLE，在会议软件中选择 CABLE Output 作为麦克风；脚本里选择 CABLE Input 的双声道输出设备编号。", 14, MUTED, false, 12);
-        link(content, "VB-CABLE 官方下载", "https://vb-audio.com/Cable/");
+        text(content, "先选择电脑系统，只看对应步骤。虚拟麦克风设备由电脑端驱动安装后自动创建。", 14, MUTED, false, 8);
+        LinearLayout selector = new LinearLayout(getContext());
+        LinearLayout.LayoutParams selectorParams = new LinearLayout.LayoutParams(-1, -2);
+        selectorParams.topMargin = dp(12);
+        content.addView(selector, selectorParams);
+        LinearLayout steps = new LinearLayout(getContext());
+        steps.setOrientation(LinearLayout.VERTICAL);
+        content.addView(steps, new LinearLayout.LayoutParams(-1, -2));
+        TextView macButton = action(selector, "macOS", () -> { }, false, 0);
+        TextView windowsButton = action(selector, "Windows", () -> { }, false, 0);
+        macButton.setLayoutParams(new LinearLayout.LayoutParams(0, -2, 1));
+        windowsButton.setLayoutParams(new LinearLayout.LayoutParams(0, -2, 1));
+        macButton.setOnClickListener(v -> {
+            macButton.setBackground(UiKit.pill(getContext(), Color.rgb(36, 87, 151)));
+            windowsButton.setBackground(UiKit.pill(getContext(), Color.rgb(35, 47, 66)));
+            renderMicrophoneSteps(steps, true, saveMac);
+        });
+        windowsButton.setOnClickListener(v -> {
+            windowsButton.setBackground(UiKit.pill(getContext(), Color.rgb(36, 87, 151)));
+            macButton.setBackground(UiKit.pill(getContext(), Color.rgb(35, 47, 66)));
+            renderMicrophoneSteps(steps, false, saveWindows);
+        });
+        text(steps, "请选择 macOS 或 Windows。", 14, BLUE, false, 12);
+    }
+
+    private void renderMicrophoneSteps(LinearLayout parent, boolean mac, Runnable savePackage) {
+        parent.removeAllViews();
+        text(parent, mac ? "macOS · BlackHole 2ch" : "Windows · VB-CABLE", 17, WHITE, true, 18);
+        if (mac) {
+            text(parent, "1. 从官网下载并安装 BlackHole 2ch；已装 Homebrew 也可运行 brew install blackhole-2ch。安装后会自动出现 BlackHole 2ch，不用手动新建麦克风。打开“音频 MIDI 设置”确认设备存在，并设为 48,000 Hz、2 声道。", 14, MUTED, false, 8);
+            link(parent, "BlackHole 2ch 官方下载", "https://existential.audio/blackhole/");
+        } else {
+            text(parent, "1. 从 VB-Audio 官网下载 VB-CABLE ZIP，先解压，再右键安装程序选择“以管理员身份运行”，安装后重启。系统“声音”设置中：输出列表应有 CABLE Input，输入列表应有 CABLE Output。无需手动新建麦克风。", 14, MUTED, false, 8);
+            link(parent, "VB-CABLE 官方下载与安装说明", "https://vb-audio.com/Cable/");
+        }
+        text(parent, "2. 电脑需安装 Python 3 和 adb。手机打开“麦克风”并允许录音权限；用可传数据的线连接电脑，USB 用途选“文件传输／传输数据”，允许 USB 调试。", 14, MUTED, false, 12);
+        text(parent, mac
+            ? "3. 解压 macOS 桥接包，运行 start-media-mac.command，选择模式 1；设备列表中输入 BlackHole 2ch 且有 2 路输出的编号。保持终端打开。"
+            : "3. 解压 Windows 桥接包，运行 start-media-windows.bat，选择模式 1；设备列表中输入 CABLE Input 且有 2 路输出的编号。保持命令窗口打开。", 14, MUTED, false, 12);
+        text(parent, mac
+            ? "4. 在会议软件的麦克风设置中选择 BlackHole 2ch，对着手机说话测试。"
+            : "4. 在会议软件的麦克风设置中选择 CABLE Output，对着手机说话测试。", 14, BLUE, false, 12);
+        action(parent, mac ? "↓  保存 macOS 桥接包到手机" : "↓  保存 Windows 桥接包到手机",
+            savePackage, true, 16);
+        link(parent, mac ? "电脑从 GitHub 下载 macOS 桥接包" : "电脑从 GitHub 下载 Windows 桥接包",
+            mac ? BridgeDownloads.MAC_ZIP : BridgeDownloads.WINDOWS_ZIP);
     }
 
     private void usbPackages(Runnable saveMac, Runnable saveWindows, boolean media) {

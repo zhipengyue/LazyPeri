@@ -6,10 +6,11 @@
 
 ## 麦克风
 
-1. 从 [VB-Audio 官网](https://vb-audio.com/Cable/) 安装 **VB-CABLE**；按原厂要求重启 Windows。
-2. 双击 `start-media-windows.bat`，选 `1`。首次运行会联网下载 Python 依赖。在设备列表中输入 **CABLE Input** 对应的输出设备编号。
-3. 手机进入“麦克风”并授予权限；说话时图案应发蓝光。电脑窗口应显示连接。
-4. 在会议或录音软件中选择 **CABLE Output** 作为麦克风，录音测试。
+1. **创建虚拟麦克风设备。** 从 [VB-Audio 官网](https://vb-audio.com/Cable/)下载 **VB-CABLE** 驱动 ZIP，先解压。普通 64 位 Windows 右键 `VBCABLE_Setup_x64.exe` 选择“以管理员身份运行”，点击安装驱动，完成后重启电脑；其他架构按官网包内说明选择对应安装程序。驱动会自动创建设备，不用另装“虚拟麦克风”软件。[官方安装手册](https://vb-audio.com/Cable/VBCABLE_ReferenceManual.pdf)
+2. **检查两个端口。** 打开“设置 → 系统 → 声音”：在**输出**设备列表中应看到 **CABLE Input**，在**输入**设备列表中应看到 **CABLE Output**。名称从虚拟线缆的角度命名，容易看反；麦克风功能中，桥接脚本选 CABLE Input，会议软件选 CABLE Output。若列表没有，先确认已重启，再检查驱动安装。
+3. **连接手机。** 手机打开“麦克风”页面并允许录音权限；完成上方 USB 连接步骤，保持手机页面亮着。
+4. **运行桥接。** 在解压后的桥接包中双击 `start-media-windows.bat`，选模式 `1`。首次运行会联网安装 Python 依赖。设备列表中找到 **CABLE Input** 且标有 **2 路输出**的编号，输入这个编号。不要选 CABLE Output、电脑扬声器或物理麦克风。保持命令窗口打开。
+5. **选会议软件麦克风。** 在会议或录音软件的麦克风设置中选 **CABLE Output**，对着手机说话并检查音量指示或试录。电脑端脚本把手机声音写入 CABLE Input，会议软件从 CABLE Output 读取。
 
 ## 音箱
 

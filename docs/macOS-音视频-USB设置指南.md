@@ -6,10 +6,11 @@
 
 ## 麦克风
 
-1. 从 [BlackHole 官网](https://existential.audio/blackhole/) 安装 **BlackHole 2ch**。
-2. 双击 `start-media-mac.command`，选 `1`。首次运行会联网下载 Python 依赖。输入 **BlackHole 2ch** 的输出设备编号。
-3. macOS 若请求“终端”使用麦克风，按需允许。手机进入“麦克风”并允许权限；电脑窗口应显示连接。
-4. 在会议或录音软件中选择 **BlackHole 2ch** 作为麦克风，录音测试。
+1. **创建虚拟麦克风设备。** 从 [BlackHole 官网](https://existential.audio/blackhole/)安装 **BlackHole 2ch**；已安装 Homebrew 的 Mac 也可在终端运行 `brew install blackhole-2ch`。安装后驱动会自动创建同名虚拟音频设备，不用在 macOS 中手动新建麦克风。
+2. **检查设备。** 按 ⌘+空格搜索并打开“音频 MIDI 设置”，左侧确认有 **BlackHole 2ch**。选中它，检查格式为 **48,000 Hz、2 声道**。若没有出现，重新启动 Mac 后再检查。这里无需把系统默认输入或输出改为 BlackHole。
+3. **连接手机。** 手机打开“麦克风”页面并允许录音权限；完成上方 USB 连接步骤，保持手机页面亮着。
+4. **运行桥接。** 在解压后的桥接包中双击 `start-media-mac.command`，选模式 `1`。首次运行会联网安装 Python 依赖。设备列表中找到 **BlackHole 2ch** 且标有 **2 路输出**的编号，输入这个编号。不要选 MacBook 麦克风、外置麦克风或只有输入通道的设备。保持终端窗口打开。
+5. **选会议软件麦克风。** 在会议或录音软件的麦克风设置中选 **BlackHole 2ch**，对着手机说话并检查音量指示或试录。电脑端脚本把手机声音写入 BlackHole 的播放端，会议软件从同名设备的录音端读取。macOS 若请求终端使用麦克风，请允许。
 
 ## 音箱
 

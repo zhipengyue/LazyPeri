@@ -36,7 +36,7 @@ Android 手机通过蓝牙 HID 或 USB 数据线配合电脑端 Bridge 模拟触
 
 ## 使用
 
-1. 安装 [GitHub 上的 Android APK](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-Android-v0.9.10.apk)（仓库路径：`releases/懒人外设-Android-v0.9.10.apk`），打开应用。蓝牙模式需允许“附近设备”权限。
+1. 安装 [GitHub 上的 Android APK](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-Android-v0.9.11.apk)（仓库路径：`releases/懒人外设-Android-v0.9.11.apk`），打开应用。蓝牙模式需允许“附近设备”权限。
 2. 蓝牙模式：在电脑与手机的系统蓝牙设置中配对；应用打开时会自动尝试连接已配对的电脑。如需手动选择，打开相应功能的“指南”→“连接设置”。手机必须支持 Bluetooth HID Device。
 3. USB 模式：在手机的开发者选项中开启 **USB 调试**；用可传数据的线连接电脑并解锁手机；下拉通知栏，点“正在通过 USB 充电”或“USB 用途”，选择 **“文件传输／传输数据（MTP）”**；再接受手机上的“允许 USB 调试”弹窗。电脑需安装 Python 3 和 Android Platform Tools（`adb`）。运行 `adb devices`，确认手机序列号后显示 `device`；随后打开手机应用，再运行 `tools/start-usb-mac.command` 或 `tools/start-usb-windows.bat`。Windows 可下载下方的“Windows USB 工具包”，解压后运行其中的批处理文件。也可运行 `python3 tools/usb-bridge.py`（Windows 可用 `py -3`）。
 4. macOS 首次使用 USB Bridge 时，在“系统设置 → 隐私与安全性 → 无障碍（部分版本称辅助功能）”中允许实际运行 Bridge 的程序控制电脑；Windows 无需开启同名系统权限。详细步骤和故障排查见下方的 USB 授权指南。点击应用右上角“指南”可查看手势与连接状态；“⚙”可选择 Mac 或 Windows 的桌面切换快捷键。
