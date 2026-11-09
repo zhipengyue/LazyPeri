@@ -14,6 +14,8 @@ final class TrackpadView extends View {
     private final HidController hid;
     private final Paint paint = new Paint(3);
     private boolean windows;
+    private boolean longPressRightEnabled = true;
+    private float sensitivity = 1.25f;
     private int fingers;
     private float lastX, lastY, downX, downY, moveRemainderX, moveRemainderY, scrollRemainder;
     private long downTime;
@@ -25,7 +27,7 @@ final class TrackpadView extends View {
         super(context);
         this.hid = hid;
         longPress = () -> {
-            if (fingers == 1 && !moved && !dragging && !externalLeftHeld) {
+            if (longPressRightEnabled && fingers == 1 && !moved && !dragging && !externalLeftHeld) {
                 longPressed = true;
                 hid.click(true);
                 performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
@@ -37,6 +39,11 @@ final class TrackpadView extends View {
     }
 
     void setWindows(boolean value) { windows = value; invalidate(); }
+    void setLongPressRightEnabled(boolean enabled) {
+        longPressRightEnabled = enabled;
+        if (!enabled) removeCallbacks(longPress);
+    }
+    void setSensitivity(float value) { sensitivity = Math.max(0.5f, Math.min(2.5f, value)); }
     void setExternalLeftHeld(boolean held) {
         externalLeftHeld = held;
         if (held) removeCallbacks(longPress);
@@ -94,7 +101,7 @@ final class TrackpadView extends View {
                 hid.leftDown(); dragging = true;
                 performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             }
-            if (count == 1 && !externalLeftHeld)
+            if (count == 1 && !externalLeftHeld && longPressRightEnabled)
                 postDelayed(longPress, ViewConfiguration.getLongPressTimeout());
             invalidate();
             return true;
@@ -108,7 +115,7 @@ final class TrackpadView extends View {
             if (longPressed) return true;
             if (Math.hypot(totalX,totalY) > 12*getResources().getDisplayMetrics().density) moved = true;
             if (fingers == 1 || fingers == 3) {
-                float gain = fingers == 3 ? 1.8f : 1.25f;
+                float gain = sensitivity * (fingers == 3 ? 1.44f : 1f);
                 moveRemainderX += dx*gain;
                 moveRemainderY += dy*gain;
                 int mx = (int)moveRemainderX, my = (int)moveRemainderY;

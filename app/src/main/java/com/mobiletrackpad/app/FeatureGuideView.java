@@ -65,8 +65,9 @@ final class FeatureGuideView extends ScrollView {
 
     private void touchpad() {
         section("触控手势");
-        text(content, "单指移动：移动指针\n单指轻点两次：双击\n单指长按、双指轻点：右键\n双指上下滑动：滚动\n三指移动：按住左键拖拽\n四指左右滑动：切换桌面", 14, MUTED, false, 8);
+        text(content, "单指移动：移动指针\n单指轻点两次：双击\n单指长按（可在设置中关闭）、双指轻点：右键\n双指上下滑动：滚动\n三指移动：按住左键拖拽\n四指左右滑动：切换桌面", 14, MUTED, false, 8);
         text(content, "Windows 模式下，顶部左键可按住拖拽，顶部右键为右键。桌面切换使用 Win + Ctrl + ← / →；Mac 使用 Control + ← / →。", 14, MUTED, false, 10);
+        text(content, "触摸板页点 ⚙ 可切换电脑系统、开关“长按触发右键”，并用滑块调整指针灵敏度（0.50×～2.50×）；设置会保存。", 14, MUTED, false, 10);
         text(content, "竖屏输入栏编辑后点击“发送”；中文和其他 Unicode 文字需要 USB Bridge。", 14, MUTED, false, 8);
     }
 

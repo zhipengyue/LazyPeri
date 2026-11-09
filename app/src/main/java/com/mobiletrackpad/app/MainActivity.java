@@ -35,6 +35,10 @@ import android.widget.ImageView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,6 +79,8 @@ public final class MainActivity extends Activity {
     private TextView settingsButton, textButton, helpButton, portraitKeyboardButton, leftMouseButton, portraitInputStatus;
     private TextView displayAspectButton;
     private boolean windows, portraitTouchpad, textMode, portraitImeVisible, leftButtonHeld, bound;
+    private boolean longPressRightEnabled;
+    private float touchpadSensitivity;
     private int selectedMode = MODE_HOME;
 
     private final ServiceConnection connection = new ServiceConnection() {
@@ -97,6 +103,8 @@ public final class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT >= 30) getWindow().setDecorFitsSystemWindows(false);
         windows = getPreferences(MODE_PRIVATE).getBoolean("windows", true);
         portraitTouchpad = getPreferences(MODE_PRIVATE).getBoolean("portrait_touchpad_v2", true);
+        longPressRightEnabled = getPreferences(MODE_PRIVATE).getBoolean("long_press_right", true);
+        touchpadSensitivity = getPreferences(MODE_PRIVATE).getFloat("touchpad_sensitivity", 1.25f);
         applyOrientation();
         Intent service = new Intent(this, TrackpadService.class);
         if (Build.VERSION.SDK_INT >= 26) startForegroundService(service);
@@ -213,6 +221,8 @@ public final class MainActivity extends Activity {
         functionPage.addView(surface,new LinearLayout.LayoutParams(-1,0,1));
         trackpad = new TrackpadView(this,hid);
         trackpad.setWindows(windows);
+        trackpad.setLongPressRightEnabled(longPressRightEnabled);
+        trackpad.setSensitivity(touchpadSensitivity);
         trackpadContainer = new LinearLayout(this);
         trackpadContainer.setOrientation(LinearLayout.VERTICAL);
         trackpadContainer.setMotionEventSplittingEnabled(true);
@@ -693,17 +703,70 @@ public final class MainActivity extends Activity {
     }
 
     private void showSettings() {
-        new AlertDialog.Builder(this).setTitle("触摸板设置")
-            .setSingleChoiceItems(new String[]{"Windows 模式","Mac 模式"}, windows ? 0 : 1,
-                (dialog, which) -> {
-                    windows=which == 0;
-                    getPreferences(MODE_PRIVATE).edit().putBoolean("windows",windows).apply();
-                    trackpad.setWindows(windows);
-                    if (!windows) releaseLeftButton();
-                    updateTouchpadControls();
-                    dialog.dismiss();
-                })
-            .setNegativeButton("取消",null).show();
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setPadding(dp(22), dp(8), dp(22), dp(12));
+
+        TextView systemLabel = new TextView(this);
+        systemLabel.setText("电脑系统");
+        systemLabel.setTextSize(15);
+        content.addView(systemLabel);
+        RadioGroup systems = new RadioGroup(this);
+        RadioButton windowsOption = new RadioButton(this);
+        windowsOption.setText("Windows 模式");
+        windowsOption.setId(View.generateViewId());
+        systems.addView(windowsOption);
+        RadioButton macOption = new RadioButton(this);
+        macOption.setText("Mac 模式");
+        macOption.setId(View.generateViewId());
+        systems.addView(macOption);
+        systems.check(windows ? windowsOption.getId() : macOption.getId());
+        content.addView(systems);
+        systems.setOnCheckedChangeListener((group, checkedId) -> {
+            windows = checkedId == windowsOption.getId();
+            getPreferences(MODE_PRIVATE).edit().putBoolean("windows", windows).apply();
+            trackpad.setWindows(windows);
+            if (!windows) releaseLeftButton();
+            updateTouchpadControls();
+        });
+
+        Switch longPressSwitch = new Switch(this);
+        longPressSwitch.setText("长按触发右键");
+        longPressSwitch.setTextSize(15);
+        longPressSwitch.setChecked(longPressRightEnabled);
+        LinearLayout.LayoutParams switchParams = new LinearLayout.LayoutParams(-1, -2);
+        switchParams.topMargin = dp(12);
+        content.addView(longPressSwitch, switchParams);
+        longPressSwitch.setOnCheckedChangeListener((button, checked) -> {
+            longPressRightEnabled = checked;
+            trackpad.setLongPressRightEnabled(checked);
+            getPreferences(MODE_PRIVATE).edit().putBoolean("long_press_right", checked).apply();
+        });
+
+        TextView sensitivityLabel = new TextView(this);
+        sensitivityLabel.setTextSize(15);
+        sensitivityLabel.setText(String.format(java.util.Locale.getDefault(), "指针灵敏度  %.2f×", touchpadSensitivity));
+        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(-1, -2);
+        labelParams.topMargin = dp(20);
+        content.addView(sensitivityLabel, labelParams);
+        SeekBar sensitivitySlider = new SeekBar(this);
+        sensitivitySlider.setMax(200);
+        sensitivitySlider.setProgress(Math.round((touchpadSensitivity - 0.5f) * 100));
+        content.addView(sensitivitySlider, new LinearLayout.LayoutParams(-1, -2));
+        sensitivitySlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
+                if (!fromUser) return;
+                touchpadSensitivity = (50 + progress) / 100f;
+                sensitivityLabel.setText(String.format(java.util.Locale.getDefault(),
+                    "指针灵敏度  %.2f×", touchpadSensitivity));
+                trackpad.setSensitivity(touchpadSensitivity);
+                getPreferences(MODE_PRIVATE).edit().putFloat("touchpad_sensitivity", touchpadSensitivity).apply();
+            }
+            @Override public void onStartTrackingTouch(SeekBar bar) { }
+            @Override public void onStopTrackingTouch(SeekBar bar) { }
+        });
+        new AlertDialog.Builder(this).setTitle("触摸板设置").setView(content)
+            .setPositiveButton("完成", null).show();
     }
 
     private void showFeedback() {
