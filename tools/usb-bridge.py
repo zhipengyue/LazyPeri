@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Receive trackpad events from the Android app over an adb USB port forward."""
 
+import argparse
 import ctypes
 import ctypes.util
 import base64
@@ -11,6 +12,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import threading
 import time
 
 PORT = 27183
@@ -251,7 +253,7 @@ class PadMapper:
         if ry > 45: desired.add("DOWN")
         if rx < -45: desired.add("LEFT")
         if rx > 45: desired.add("RIGHT")
-        for bit, key in enumerate(("J", "K", "U", "I", "Q", "E", "TAB", "ENTER")):
+        for bit, key in enumerate(("ENTER", "K", "U", "I", "Q", "E", "TAB", "ENTER")):
             if buttons & (1 << bit): desired.add(key)
         for key in sorted(self.held - desired): device.key(key, False)
         for key in sorted(desired - self.held): device.key(key, True)
@@ -261,7 +263,67 @@ class PadMapper:
         self.update(device, 0, 8, 0, 0, 0, 0)
 
 
-def handle(line, input_device):
+class XboxPad:
+    def __init__(self, send):
+        import vgamepad as vg
+
+        self.pad = vg.VX360Gamepad()
+        button = vg.XUSB_BUTTON
+        self.buttons = (
+            button.XUSB_GAMEPAD_A, button.XUSB_GAMEPAD_B, button.XUSB_GAMEPAD_X,
+            button.XUSB_GAMEPAD_Y, button.XUSB_GAMEPAD_LEFT_SHOULDER,
+            button.XUSB_GAMEPAD_RIGHT_SHOULDER, button.XUSB_GAMEPAD_BACK,
+            button.XUSB_GAMEPAD_START,
+        )
+        up, right, down, left = (
+            button.XUSB_GAMEPAD_DPAD_UP, button.XUSB_GAMEPAD_DPAD_RIGHT,
+            button.XUSB_GAMEPAD_DPAD_DOWN, button.XUSB_GAMEPAD_DPAD_LEFT,
+        )
+        self.directions = (up, up | right, right, right | down, down,
+                           down | left, left, left | up, 0)
+
+        def rumble(client, target, large_motor, small_motor, led, user_data):
+            try:
+                if send is not None:
+                    send(f"RUMBLE {large_motor} {small_motor}")
+            except OSError:
+                pass
+
+        self.pad.register_notification(callback_function=rumble)
+
+    def update(self, device, buttons, hat, lx, ly, rx, ry):
+        self.pad.reset()
+        mask = self.directions[hat] if 0 <= hat < len(self.directions) else 0
+        for bit, button in enumerate(self.buttons):
+            if buttons & (1 << bit):
+                mask |= button
+        self.pad.press_button(button=mask)
+        self.pad.left_trigger(value=255 if buttons & (1 << 8) else 0)
+        self.pad.right_trigger(value=255 if buttons & (1 << 9) else 0)
+        self.pad.left_joystick_float(x_value_float=lx / 127, y_value_float=-ly / 127)
+        self.pad.right_joystick_float(x_value_float=rx / 127, y_value_float=-ry / 127)
+        self.pad.update()
+
+    def release(self, device):
+        self.pad.unregister_notification()
+        self.pad.reset()
+        self.pad.update()
+
+
+def pad_mapper(send):
+    if platform.system() == "Windows":
+        try:
+            mapper = XboxPad(send)
+            print("Xbox 360 虚拟手柄已连接，支持游戏震动。", flush=True)
+            return mapper
+        except (ImportError, OSError, AssertionError, RuntimeError) as error:
+            print(f"Xbox 手柄初始化失败，请检查 ViGEmBus 和 vgamepad 后重启 Bridge：{error}", flush=True)
+            return None
+    print("手柄使用键盘映射（A = Enter，X = U）。", flush=True)
+    return PadMapper()
+
+
+def handle(line, input_device, send=None):
     parts = line.split()
     if not parts:
         return
@@ -280,8 +342,9 @@ def handle(line, input_device):
         input_device.switch(parts[2] == "R")
     elif parts[0] == "PAD" and len(parts) == 7:
         if not hasattr(input_device, "pad_mapper"):
-            input_device.pad_mapper = PadMapper()
-        input_device.pad_mapper.update(input_device, *(int(value) for value in parts[1:]))
+            input_device.pad_mapper = pad_mapper(send)
+        if input_device.pad_mapper is not None:
+            input_device.pad_mapper.update(input_device, *(int(value) for value in parts[1:]))
     elif parts[0] == "TEXT" and len(parts) == 3:
         input_device.text(base64.b64decode(parts[2], validate=True).decode("utf-8"))
     elif parts[0] == "KEY" and len(parts) == 3:
@@ -291,6 +354,9 @@ def handle(line, input_device):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--xbox-gamepad", action="store_true", help="使用 Windows Xbox 虚拟手柄")
+    parser.parse_args()
     system = platform.system()
     if system == "Darwin":
         input_device = MacInput()
@@ -323,6 +389,12 @@ def main():
                     peer.settimeout(None)
                     print("触摸板已连接。", flush=True)
                     waiting_reported = False
+                    send_lock = threading.Lock()
+
+                    def send(message, connection=peer, lock=send_lock):
+                        with lock:
+                            connection.sendall((message + "\n").encode("ascii"))
+
                     with peer.makefile("r", encoding="ascii") as stream:
                         for line in stream:
                             request_id = None
@@ -330,17 +402,17 @@ def main():
                             if len(fields) == 3 and fields[0] == "TEXT" and fields[1].isdigit():
                                 request_id = fields[1]
                             try:
-                                handle(line, input_device)
+                                handle(line, input_device, send)
                                 event_type = fields[0] if fields else ""
                                 if event_type and event_type not in seen_events:
                                     seen_events.add(event_type)
                                     print(f"已收到 {event_type} 输入事件。", flush=True)
                                 if request_id:
-                                    peer.sendall(f"ACK {request_id}\n".encode("ascii"))
+                                    send(f"ACK {request_id}")
                             except (ValueError, OverflowError, UnicodeDecodeError, binascii.Error, OSError) as error:
                                 print(f"输入事件失败：{error}", file=sys.stderr, flush=True)
                                 if request_id:
-                                    peer.sendall(f"ERR {request_id}\n".encode("ascii"))
+                                    send(f"ERR {request_id}")
             except (OSError, ConnectionError):
                 if not waiting_reported:
                     print("等待手机应用连接；请确认手机已打开应用并允许 USB 调试。", flush=True)
@@ -349,7 +421,9 @@ def main():
                 if input_device.down:
                     input_device.button(False)
                 if hasattr(input_device, "pad_mapper"):
-                    input_device.pad_mapper.release(input_device)
+                    if input_device.pad_mapper is not None:
+                        input_device.pad_mapper.release(input_device)
+                    del input_device.pad_mapper
             time.sleep(1)
     except KeyboardInterrupt:
         print("\n已退出。")

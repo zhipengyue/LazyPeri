@@ -13,6 +13,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Base64;
 
 import java.nio.charset.StandardCharsets;
@@ -66,6 +68,8 @@ final class HidController {
     private final Listener listener;
     private final BluetoothAdapter adapter;
     private final UsbBridge usb;
+    private final Vibrator vibrator;
+    private boolean gamepadActive;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final ArrayDeque<int[]> textKeys = new ArrayDeque<>();
     private BluetoothHidDevice hid;
@@ -84,14 +88,36 @@ final class HidController {
     HidController(Context context, Listener listener) {
         this.context = context;
         this.listener = listener;
+        vibrator = context.getSystemService(Vibrator.class);
         BluetoothManager manager = context.getSystemService(BluetoothManager.class);
         adapter = manager == null ? null : manager.getAdapter();
         usb = new UsbBridge(() -> context.getMainExecutor().execute(() -> {
+            if (gamepadActive) sendUsbGamepadState();
             if (device != null && buttons != 0) {
                 buttons = 0;
                 mouseBluetooth(0, 0, 0);
             }
-        }));
+        }), this::rumble);
+    }
+
+    void setGamepadActive(boolean active) {
+        gamepadActive = active;
+        if (active) textKeys.clear();
+        if (!active) rumble(0);
+        else sendUsbGamepadState();
+    }
+
+    private boolean sendUsbGamepadState() {
+        int mask = (gamepad[0] & 255) | ((gamepad[1] & 255) << 8);
+        return usb.send("PAD " + mask + " " + gamepad[2] + " " + gamepad[3] + " "
+            + gamepad[4] + " " + gamepad[5] + " " + gamepad[6]);
+    }
+
+    private void rumble(int intensity) {
+        if (vibrator == null || !vibrator.hasVibrator()) return;
+        if (intensity == 0) vibrator.cancel();
+        else if (gamepadActive && intensity > 0 && intensity <= 255)
+            vibrator.vibrate(VibrationEffect.createOneShot(5000, intensity));
     }
 
     boolean isBluetoothReady() { return adapter != null && adapter.isEnabled(); }
@@ -286,6 +312,7 @@ final class HidController {
         }, 45);
     }
     void sendKey(int modifiers, int usage) {
+        if (gamepadActive) return;
         if (usb.send("KEY " + modifiers + " " + usage)) return;
         if (!isConnected()) return;
         textKeys.add(new int[]{modifiers, usage});
@@ -304,11 +331,12 @@ final class HidController {
         };
         if (java.util.Arrays.equals(gamepad, next)) return;
         System.arraycopy(next, 0, gamepad, 0, next.length);
-        if (usb.send("PAD " + buttonMask + " " + hat + " " + leftX + " " + leftY + " " + rightX + " " + rightY)) return;
+        if (sendUsbGamepadState()) return;
         if (isConnected()) hid.sendReport(device, GAMEPAD_ID, next);
     }
     void releaseGamepad() { gamepadState(0,8,0,0,0,0); }
     void sendText(String value, Consumer<Integer> callback) {
+        if (gamepadActive) { callback.accept(TEXT_NO_CONNECTION); return; }
         if (usb.isConnected()) {
             String encoded=Base64.encodeToString(value.getBytes(StandardCharsets.UTF_8),Base64.NO_WRAP);
             usb.sendText(encoded, accepted -> callback.accept(accepted ? TEXT_USB : TEXT_NO_CONNECTION));

@@ -80,7 +80,9 @@ final class FeatureGuideView extends ScrollView {
     private void gamepad() {
         section("按键与兼容性");
         text(content, "左摇杆、方向键、右摇杆、ABXY、L1/R1、开始/选择可同时触控。蓝牙发送标准 HID 手柄输入；部分只接受 XInput 的 Windows 游戏可能需要在游戏中改用 DirectInput 或进行按键映射。", 14, MUTED, false, 8);
-        text(content, "USB Bridge 发送键盘映射：左摇杆/方向键 → WASD；右摇杆 → 方向键；A/B/X/Y → J/K/U/I；L1/R1 → Q/E；开始/选择 → Enter/Tab。", 14, MUTED, false, 10);
+        text(content, "Windows USB 模拟 Xbox 360 手柄。LB/RB 是肩键，LT/RT 是独立扳机。电脑需安装 ViGEmBus 和 vgamepad（python -m pip install vgamepad）。先打开手机手柄页面，等 Bridge 显示 Xbox 360 虚拟手柄已连接，再启动游戏。", 14, MUTED, false, 10);
+        link(content, "vgamepad 安装说明", "https://github.com/yannbouteiller/vgamepad#installation");
+        text(content, "Windows 桥接窗口若提示 Xbox 手柄初始化失败，请检查 ViGEmBus 和 vgamepad 后重启桥接。测试时可先断开实体手柄，确保游戏选中手机的虚拟手柄。", 14, MUTED, false, 10);
     }
 
     private void microphone(Runnable saveMac, Runnable saveWindows) {

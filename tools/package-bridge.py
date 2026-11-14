@@ -59,16 +59,6 @@ def main():
             info.external_attr = 0o644 << 16
             output.writestr(info, source.read_bytes())
 
-    basic_packages = {
-        "macOS": [TOOLS / "start-usb-mac.command", TOOLS / "usb-bridge.py",
-                  DOCS / "macOS-USB-授权指南.md", DOCS / "macOS-USB-快速开始.txt"],
-        "Windows": [TOOLS / "start-usb-windows.bat", TOOLS / "usb-bridge.py",
-                    DOCS / "Windows-USB-授权指南.md", DOCS / "Windows-USB-快速开始.txt"],
-    }
-    for platform, files in basic_packages.items():
-        archive = RELEASES / f"懒人外设-{platform}-USB-Bridge.zip"
-        write_bridge_archive(archive, files)
-
     for platform, unique in PLATFORMS.items():
         files = COMMON + unique
         archive = RELEASES / f"懒人外设-{platform}-全功能-USB-Bridge.zip"

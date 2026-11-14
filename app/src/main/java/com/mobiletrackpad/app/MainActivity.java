@@ -251,7 +251,7 @@ public final class MainActivity extends Activity {
         rightMouseButton.setOnClickListener(v -> hid.click(true));
         trackpadContainer.addView(trackpad,new LinearLayout.LayoutParams(-1,0,1));
         addSurface(surface,trackpadContainer);
-        gamepad = new GamepadView(this,hid);
+        gamepad = new GamepadView(this,hid,this::navigateBack,this::showGuide);
         addSurface(surface,gamepad);
         keyboard = new VirtualKeyboardView(this,hid);
         addSurface(surface,keyboard);
@@ -507,10 +507,12 @@ public final class MainActivity extends Activity {
         selectedMode=mode;
         ((View)home.getParent()).setVisibility(mode == MODE_HOME ? View.VISIBLE : View.GONE);
         functionPage.setVisibility(mode == MODE_HOME || mode == MODE_DISPLAY ? View.GONE : View.VISIBLE);
+        headerBar.setVisibility(mode == MODE_GAMEPAD ? View.GONE : View.VISIBLE);
         displayPage.setVisibility(mode == MODE_DISPLAY ? View.VISIBLE : View.GONE);
         trackpadContainer.setVisibility(mode == MODE_TOUCHPAD ? View.VISIBLE : View.GONE);
         keyboard.setVisibility(mode == MODE_KEYBOARD ? View.VISIBLE : View.GONE);
         gamepad.setVisibility(mode == MODE_GAMEPAD ? View.VISIBLE : View.GONE);
+        hid.setGamepadActive(mode == MODE_GAMEPAD);
         textInput.setVisibility(View.GONE);
         microphoneView.setVisibility(mode == MODE_MICROPHONE ? View.VISIBLE : View.GONE);
         speakerView.setVisibility(mode == MODE_SPEAKER ? View.VISIBLE : View.GONE);
@@ -908,6 +910,7 @@ public final class MainActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
+        if (hid != null) hid.setGamepadActive(selectedMode == MODE_GAMEPAD);
         updateDisplaySystemUi();
         if (hid != null) hid.autoConnect();
         if (selectedMode == MODE_MICROPHONE && microphoneView != null) microphoneView.activate();
@@ -916,6 +919,7 @@ public final class MainActivity extends Activity {
         if (selectedMode == MODE_DISPLAY && displayView != null) displayView.activate();
     }
     @Override protected void onPause() {
+        if (hid != null) hid.setGamepadActive(false);
         if (microphoneView != null) microphoneView.deactivate();
         if (speakerView != null) speakerView.deactivate();
         if (cameraView != null) cameraView.deactivate();

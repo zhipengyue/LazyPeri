@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,6 +21,7 @@ import android.os.Looper;
 final class UsbBridge {
     static final int PORT = 27183;
     private final Runnable onConnected;
+    private final IntConsumer onRumble;
     private volatile boolean running = true;
     private volatile Socket client;
     private volatile OutputStream output;
@@ -30,8 +32,9 @@ final class UsbBridge {
     private final Map<Integer,Consumer<Boolean>> pending = new HashMap<>();
     private int nextRequestId;
 
-    UsbBridge(Runnable onConnected) {
+    UsbBridge(Runnable onConnected, IntConsumer onRumble) {
         this.onConnected = onConnected;
+        this.onRumble = onRumble;
         Thread thread = new Thread(this::acceptLoop, "UsbTrackpadBridge");
         thread.setDaemon(true);
         thread.start();
@@ -64,6 +67,11 @@ final class UsbBridge {
                         if (parts.length == 2 && (parts[0].equals("ACK") || parts[0].equals("ERR"))) {
                             try { finish(Integer.parseInt(parts[1]),parts[0].equals("ACK")); }
                             catch (NumberFormatException ignored) { }
+                        } else if (parts.length == 3 && parts[0].equals("RUMBLE")) {
+                            try {
+                                int intensity = Math.max(Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+                                handler.post(() -> { if (client == peer) onRumble.accept(intensity); });
+                            } catch (NumberFormatException ignored) { }
                         }
                     }
                 } catch (IOException ignored) {
@@ -121,6 +129,7 @@ final class UsbBridge {
         output = null;
         try { if (client != null) client.close(); } catch (IOException ignored) { }
         client = null;
+        handler.post(() -> onRumble.accept(0));
         for (Integer id: new java.util.ArrayList<>(pending.keySet())) finish(id,false);
     }
 }

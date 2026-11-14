@@ -48,8 +48,6 @@ Android 手机通过蓝牙 HID 或 USB 数据线配合电脑端 Bridge 模拟触
 电脑打开 [GitHub 仓库](https://github.com/zhipengyue/LazyPeri)，进入 `releases` 目录即可找到以下文件；推荐下载含所有桥接脚本的全功能包：
 
 - [两份指南打包下载](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/docs/懒人外设-USB授权指南.zip)
-- [Windows USB 工具包下载](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-Windows-USB-Bridge.zip)
-- [macOS USB 工具包下载](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-macOS-USB-Bridge.zip)
 - [Windows 全功能 USB 工具包（含音视频与显示器试用版）](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-Windows-全功能-USB-Bridge.zip)
 - [macOS 全功能 USB 工具包（含音视频与显示器试用版）](https://raw.githubusercontent.com/zhipengyue/LazyPeri/main/releases/懒人外设-macOS-全功能-USB-Bridge.zip)
 
@@ -65,7 +63,9 @@ USB 数据线连接本身不会让普通 Android 手机变成 USB HID 鼠标。�
 
 首页点击“游戏手柄”，可同时使用左摇杆、方向键、右摇杆、ABXY、L1/R1、开始/选择。蓝牙模式发送标准 HID 游戏手柄报告（16 个按键、方向帽、双摇杆），电脑端不需要运行额外软件。首次升级到此版本后，如果电脑仍只识别旧鼠标/键盘配置，请在电脑与手机两端删除旧蓝牙配对后重新配对，让电脑读取新的 HID 描述符。
 
-USB Bridge 模式将手柄映射为键盘：左摇杆和方向键 → WASD，右摇杆 → 方向键，A/B/X/Y → J/K/U/I，L1/R1 → Q/E，开始/选择 → Enter/Tab。Windows 上仅支持 XInput 的游戏可能不接受标准蓝牙 HID 手柄；USB 键盘映射也需要游戏允许自定义键位。Mac 的手柄识别同样由游戏决定。
+Windows USB Bridge 检测到 ViGEmBus 和 [vgamepad](https://github.com/yannbouteiller/vgamepad#installation) 时，会模拟 Xbox 360 手柄并将游戏的震动反馈发送到手机。用运行桥接脚本的 Python 安装 vgamepad，例如 `py -3 -m pip install vgamepad`。连接新版 Bridge 后先打开手机手柄页面，再启动游戏。
+
+USB 键盘映射模式下，左摇杆和方向键对应 WASD，右摇杆对应方向键，A/B/X/Y 对应 Enter/K/U/I，L1/R1 对应 Q/E，开始/选择对应 Enter/Tab。蓝牙使用标准 HID，游戏的识别和按键映射取决于电脑系统和游戏。
 
 ## 虚拟键盘
 
